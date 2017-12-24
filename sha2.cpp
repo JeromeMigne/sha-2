@@ -176,13 +176,10 @@ struct Sigma_512 {
     }
 };
 
-template<typename Sigma, typename Array>
-void do_process_block(sha2::State<typename Array::value_type>& H,
-                      const Hash::Byte* block, const Array& K)
+template<typename Sigma, typename Word, size_t rounds_count>
+void do_process_block(sha2::State<Word>& H, const Hash::Byte* block,
+                      const array<Word, rounds_count>& K)
 {
-    using Word = typename Array::value_type;
-    constexpr auto rounds_count = K.size();
-
     Word w[rounds_count];
 
     sha2::copy_bigendian(reinterpret_cast<const Word*>(block), 16, w);
