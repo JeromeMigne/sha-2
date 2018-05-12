@@ -27,6 +27,7 @@ const State<uint32_t> h0_224 = {
     0xc1059ed8, 0x367cd507, 0x3070dd17, 0xf70e5939,
     0xffc00b31, 0x68581511, 0x64f98fa7, 0xbefa4fa4
 };
+
 const State<uint32_t> h0_256 = {
     0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
     0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
@@ -144,7 +145,9 @@ inline Word maj(Word x, Word y, Word z) {
     return (x & y) ^ (x & z) ^ (y & z);
 }
 
-struct Sigma_256 {
+template<typename T> struct Sigma;
+
+template<> struct Sigma<uint32_t> {
     using Word = uint32_t;
     static Word big_0(Word x) {
         return rotr(x,  2) ^ rotr(x, 13) ^ rotr(x, 22);
@@ -160,7 +163,7 @@ struct Sigma_256 {
     }
 };
 
-struct Sigma_512 {
+template<> struct Sigma<uint64_t> {
     using Word = uint64_t;
     static Word big_0(Word x) {
         return rotr(x, 28) ^ rotr(x, 34) ^ rotr(x, 39);
@@ -176,10 +179,12 @@ struct Sigma_512 {
     }
 };
 
-template<typename Sigma, typename Word, size_t rounds_count>
+template<typename Word, size_t rounds_count>
 void do_process_block(sha2::State<Word>& H, const Hash::Byte* block,
                       const array<Word, rounds_count>& K)
 {
+    using Sigma = Sigma<Word>;
+
     Word w[rounds_count];
 
     sha2::copy_bigendian(reinterpret_cast<const Word*>(block), 16, w);
@@ -244,12 +249,12 @@ namespace sha2 {
 
 void process_block(State<uint32_t>& h, const Hash::Byte* block)
 {
-    do_process_block<Sigma_256>(h, block, K_256);
+    do_process_block(h, block, K_256);
 }
 
 void process_block(State<uint64_t>& h, const Hash::Byte* block)
 {
-    do_process_block<Sigma_512>(h, block, K_512);
+    do_process_block(h, block, K_512);
 }
 
 void padding(State<uint32_t>& h, Block_bytes<uint32_t>& buffer,
