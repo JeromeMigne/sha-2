@@ -24,8 +24,14 @@ class Hash {
   public:
     using Byte = std::uint8_t;
 
-    virtual ~Hash() {}
+    virtual ~Hash() = default;
 
+    Hash(Hash&&) = default;
+    Hash& operator=(Hash&&) = default;
+    Hash(const Hash&) = default;
+    Hash& operator=(const Hash&) = default;
+    Hash() = default;
+    
     virtual void reset() = 0;
     virtual void update(const void*, std::size_t) = 0;
     virtual void terminate(std::vector<Byte>& out) = 0;
