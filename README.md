@@ -1,5 +1,7 @@
 # SHA-2
 
+[![Build Status](https://travis-ci.org/JeromeMigne/sha-2.svg?branch=master)](https://travis-ci.org/JeromeMigne/sha-2)
+
 A C++11 implementation of SHA-2 algorithm, with unit tests using boost test
 framework.
 
