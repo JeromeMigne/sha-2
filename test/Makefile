@@ -35,7 +35,8 @@ SOURCES = test_runner.cpp sha2.cpp sha2_test.cpp
 
 all: $(BIN)
 
-rebuild: clean all
+rebuild:
+	@make clean && make
 
 clean:
 	rm -f *.o; rm -f *.d
@@ -52,4 +53,6 @@ $(BIN): $(SOURCES:.cpp=.o)
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.temp > $@; \
 	rm -f $@.temp
 
+ifeq (,$(filter $(MAKECMDGOALS), clean rebuild))
 -include $(SOURCES:.cpp=.d)
+endif
