@@ -20,6 +20,7 @@
 #include <cstdint>
 #include <algorithm>
 #include <array>
+#include <type_traits>
 #include "hash.h"
 
 #ifdef SHA2_CPP
@@ -43,12 +44,17 @@ extern const State<std::uint64_t> h0_512_224;
 extern const State<std::uint64_t> h0_512_256;
 
 template<typename Word>
-void copy_bigendian(const Word* src, std::size_t words_len, Word* dst) {
-    if (cpu_is_big_endian) {
-        std::copy_n(src, words_len, dst);
-        return;
-    }
-    std::transform(src, src + words_len, dst, [](Word w) {
+typename std::enable_if<cpu_is_big_endian, Word>::type*
+copy_bigendian(const Word* src, std::size_t words_len, Word* dst)
+{
+    return std::copy_n(src, words_len, dst);
+}
+
+template<typename Word>
+typename std::enable_if<!cpu_is_big_endian, Word>::type*
+copy_bigendian(const Word* src, std::size_t words_len, Word* dst)
+{
+    return std::transform(src, src + words_len, dst, [](Word w) {
         for (char *low = reinterpret_cast<char*>(&w),
                   *high = low + (sizeof(w) - 1);
              low < high; low++, high--)
