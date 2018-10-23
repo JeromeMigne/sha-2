@@ -16,7 +16,6 @@
  */
 #define SHA2_CPP
 #include "sha2.h"
-#include <cstring>
 #include <algorithm>
 
 using namespace std;
