@@ -55,12 +55,8 @@ typename std::enable_if<!cpu_is_big_endian, Word>::type*
 copy_bigendian(const Word* src, std::size_t words_len, Word* dst)
 {
     return std::transform(src, src + words_len, dst, [](Word w) {
-        for (char *low = reinterpret_cast<char*>(&w),
-                  *high = low + (sizeof(w) - 1);
-             low < high; low++, high--)
-        {
-            std::swap(*low, *high);
-        }
+        char* p = reinterpret_cast<char*>(&w);
+        std::reverse(p, p + sizeof(w));
         return w;
     });
 }
